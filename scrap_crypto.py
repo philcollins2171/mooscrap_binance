@@ -28,6 +28,7 @@ xpath_pass="/html/body[@class='modal-open']/div[@id='signInModal']/div[@class='m
 xpath_btnlogin="/html/body[@class='modal-open']/div[@id='signInModal']/div[@class='modal-dialog modal-dialog-centered']/div[@class='modal-content bdr-radius']/div[@class='signin-wrapper']/form[@class='signin-form']/button[@class='btn btn-primary btn-hover']"
 xpath_cryptovalue="/html/body[@class='modal-open']/div[@id='setBalance']/div[@class='modal-dialog modal-dialog-centered']/div[@class='modal-content bdr-radius']/div[@class='signin-wrapper']/form[@class='signin-form']/div[@class='form-group'][1]/div[@class='input-group mb-2']/input[@id='bitcoin']"
 xpath_submit="/html/body[@class='modal-open']/div[@id='setBalance']/div[@class='modal-dialog modal-dialog-centered']/div[@class='modal-content bdr-radius']/div[@class='signin-wrapper']/form[@class='signin-form']/button[@class='btn btn-primary btn-hover']"
+xpath_position="/html/body/section[@class='investment-section pb-120']/div[@class='container']/div[@class='row']/div[@class='col-lg-12']/div[@class='main-area']/div[@class='row mt-4 mb-none-30 investment-item-area list-view']/div[@class='col-lg-6 investment-item crypto'][1]/div[@class='investment-single mb-30']/div[@class='content']/div[@class='right']/div[@class='share-price'][2]/h3[@class='price']"
 
 def site_login():
     driver.get('https://moocharoo.ninja/')
@@ -47,6 +48,7 @@ def portfolio_tracker_page():
     cryptos = driver.find_elements_by_css_selector("div.col-lg-6.investment-item.crypto")
     portfolio_lots=dict()#dictionnary of crypto = lot
     total_lots=0 # Used to recompute total number of lots used in the Moocharoo portfolio to recompute further ratios for each crypto
+    pos_value_total=0 # Used to copute total BTC equivalence
     for m in cryptos:
         """SCRAP CRYPTO NAME HTML FIELD"""
         name=m.find_element_by_css_selector('h3.investment-title').text #Get crypto name, including descriptive Name and Binance SPOT Name
@@ -54,10 +56,19 @@ def portfolio_tracker_page():
         crypto_coin=last[-1] #-1 stands for last word corresponding to Binance SPOT Name
         """SCRAP CRYPTO LOTS HTML FIELD"""
         lots=m.find_elements_by_css_selector('h4.amount') #Get crypto field containing : [0]:%, [1]:lots [2]:lot value
-        portfolio_lots[crypto_coin]=int(lots[1].text)
-        total_lots=total_lots+portfolio_lots[crypto_coin]
+        lots_value = int(lots[1].text)
+        position=m.find_elements_by_css_selector('h3.price') #Get crypto field containing : [2] 538\nHODLING [3] 0.00520\nPOSITION VALUE (in BTC)
+        temp = position[3].text
+        temp = temp.split("\n")
+        pos_value=float(temp[0])
+        temp = position[2].text
+        temp = temp.split("\n")
+        portfolio_lots[crypto_coin]=float(temp[0].replace(',','')) # Get number of Crypto holding (replace GB ',' thousands for float conversion)
+        total_lots=total_lots+lots_value
+        pos_value_total = pos_value_total+pos_value
     print(f'Total lots : {total_lots}')
-    return(portfolio_lots,total_lots)
+    print(f'Total position : {pos_value_total} BTC')
+    return(portfolio_lots,total_lots, pos_value_total)
 
 if __name__ == "__main__":
     """
@@ -76,12 +87,12 @@ if __name__ == "__main__":
     for example : {'ZRX': 4, 'BAT': 11, 'BNB': 4, 'BCH': 4, 'ADA': 7, 'LINK': 13, 'DASH': 7}
     total_lots is the total number of lots used in the Moocharoo portfolio
     """
-    portfolio_lots,total_lots=portfolio_tracker_page() 
+    portfolio_lots,total_lots,btc_total=portfolio_tracker_page() 
     """ 
     Build account dictionnary. Numbre of lots in Binance portfolio, and the direction of trading based on delta between Moocharoo and Binance
     for example : {'BAT': (19, 'BUY'), 'BNB': (0, 'SELL'), 'BCH': (0, 'BUY'), 'BTG': (0, 'BUY'), 'ADA': (489, 'BUY')}
     """
-    account=manage_binance.get_account_info(portfolio_lots,float(config.capital),total_lots) 
+    account=manage_binance.get_account_info(portfolio_lots,float(config.capital),total_lots,btc_total) 
     """ Update of all Binance positions"""
     manage_binance.update_positions(account)
     driver.quit()#kill Chrome#

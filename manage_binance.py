@@ -7,7 +7,7 @@ from binance.client import Client
 from moocharoo_config import config
 client = Client(config.apikey,config.secretkey)
 MIN_VALUE=0.0001
-def get_account_info(portfolio,capital,total_lots):
+def get_account_info(portfolio,capital,total_lots,btc_total):
     account=dict()
     for crypto in portfolio.keys():
         balance = client.get_asset_balance(asset=crypto) 
@@ -16,7 +16,13 @@ def get_account_info(portfolio,capital,total_lots):
         if  crypto != 'USDT': #USDT/BTC does not exist in Binance
             avg_price = client.get_avg_price(symbol=name) #Get market price for a pair.
             """ Compute the amount of crypto (normalized) in Moocharoo according to the ratio lots/total_lots, the capital & the market price"""
-            asset_nb=portfolio[crypto]*(capital/total_lots)/float(avg_price['price']) 
+            """ 
+            To have the same LOTs than Moocharoo, the formula to use is 
+            asset_nb=portfolio[crypto]
+            If you want to use 100% of capital, the formula to use is
+            asset_nb=portfolio[crypto]*((capital-capital*0.1)/btc_total)
+            """
+            asset_nb=portfolio[crypto]*((capital-capital*0.1)/btc_total)
             """ Compute the difference between normalized Moocharoo portfolio and Binance account crypto amount """
             difference=asset_nb-float(balance["free"])
             diff_price_btc = abs(difference)*float(avg_price['price'])
