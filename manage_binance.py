@@ -46,31 +46,30 @@ def update_positions(account):
         # example of format : {'asset': 'STPT', 'free': '12.00000000', 'locked': '0.00000000'}
         """ IF crypto in Binance Portfolio, crypto is not BNB, and crypto is not in Moocharoo portfolio, THEN Sell crypto"""
         if int(float(coin['free'])) > 0:
-            if coin['asset'] != "BNB":# BNB used for fees
-                if coin['asset'] not in account.keys():
-                    print(f'SELL {coin["free"]} \t{coin["asset"]} because not listed in MOOCHAROO portfolio')
+            if coin['asset'] not in account.keys():
+                print(f'SELL {coin["free"]} \t{coin["asset"]} because not listed in MOOCHAROO portfolio')
+                try:
+                    qty=round(float(coin['free']),2)
+                    order = client.order_market_sell(
+                    symbol=(coin["asset"]+'BTC'),
+                    quantity=qty)
+                    print(f'SELL of {coin["asset"]} {qty} success')
+                except:
                     try:
-                        qty=round(float(coin['free']),2)
+                        qty=round(float(coin['free']),1)
                         order = client.order_market_sell(
                         symbol=(coin["asset"]+'BTC'),
                         quantity=qty)
                         print(f'SELL of {coin["asset"]} {qty} success')
                     except:
                         try:
-                            qty=round(float(coin['free']),1)
+                            qty=int(float(coin['free']))
                             order = client.order_market_sell(
                             symbol=(coin["asset"]+'BTC'),
                             quantity=qty)
                             print(f'SELL of {coin["asset"]} {qty} success')
                         except:
-                            try:
-                                qty=int(float(coin['free']))
-                                order = client.order_market_sell(
-                                symbol=(coin["asset"]+'BTC'),
-                                quantity=qty)
-                                print(f'SELL of {coin["asset"]} {qty} success')
-                            except:
-                                print(f'{coin["asset"]} SELL failed ERROR 10 qty {coin["free"]}')
+                            print(f'{coin["asset"]} SELL failed ERROR 10 qty {coin["free"]}')
     """ SELL first """
     for key_coin in account:
         if account[key_coin][1]=='SELL': #account['ADA'][0] nb d'assets à acheter/vendre, account['ADA'][1] 'BUY' ou 'SELL'
@@ -121,22 +120,4 @@ def update_positions(account):
                         print(f'{order["executedQty"]} {order["symbol"]} BUY order {order["orderId"]}')
                     except:
                         print(f'{key_coin} BUY failed ERROR 30 qty {account[key_coin][0]}')
-#test={'ZRX': 4, 'BAT': 11, 'BNB': 4, 'BCH': 4, 'ADA': 7, 'LINK': 13, 'DASH': 7}
-#result=get_account_info(test, 0.24)
-# place a test market buy order, to place an actual order use the create_order function
-#order = client.create_test_order(
-#    symbol='BNBBTC',
-#    side=Client.SIDE_BUY,
-#    type=Client.ORDER_TYPE_MARKET,
-#    quantity=100)
-#order = client.order_limit_buy(
-#    symbol='BNBBTC',
-#    quantity=100,
-#    price='0.00001')
-#order = client.order_limit_sell(
-#    symbol='BNBBTC',
-#    quantity=100,
-#    price='0.00001')
-#balance = client.get_asset_balance('REN')
-#{'asset': 'BNB', 'free': '1.99485710', 'locked': '0.00000000'}
-#price=client.get_avg_price(symbol='RENBTC')
+
