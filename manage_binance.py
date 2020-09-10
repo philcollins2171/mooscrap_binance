@@ -44,7 +44,7 @@ def update_positions(account):
     """ Clear all positions that are not in Moocharoo portfolio """
     for coin in current['balances']:
         # example of format : {'asset': 'STPT', 'free': '12.00000000', 'locked': '0.00000000'}
-        """ IF crypto in Binance Portfolio, crypto is not BNB, and crypto is not in Moocharoo portfolio, THEN Sell crypto"""
+        """ IF crypto in Binance Portfolio, and crypto is not in Moocharoo portfolio, THEN Sell crypto"""
         if int(float(coin['free'])) > 0:
             if coin['asset'] not in account.keys():
                 print(f'SELL {coin["free"]} \t{coin["asset"]} because not listed in MOOCHAROO portfolio')
