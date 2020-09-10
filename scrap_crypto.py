@@ -4,7 +4,7 @@
 # 
 
 import sys
-""" Code used with python 3.5.3 run under Visual Studio Code on a Chromebook"""
+""" Code used with python 3.8.2 run under Visual Studio Code on a Chromebook"""
 import time
 """ pip install python-binance """
 import manage_binance
