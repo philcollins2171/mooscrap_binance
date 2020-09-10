@@ -1,15 +1,15 @@
 # mooscrap_binance
 
-you run this program at your own risk!!!!!!
+#You run this program at your own risk!!!!!!
 
 This program allows to synchronise the Binance crypto account with Moocharoo crypto portfolio. It opens a web explorer, authentificates on moocharoo.ninja, goes to Master portfolio, and grabs all the values of the portfolio.
 It then send BUY/SELL order to Binance to have the same proportionallity in the Binance portfolio.
 
 What you need :
-Master account $$ to moocharoo.ninja to access moocharoo Master portfolio
-Binance account $$
-Python install
-Some python knowledge
+#Master account $$ to moocharoo.ninja to access moocharoo Master portfolio
+#Binance account $$
+#Python install
+#Some python knowledge
 
 Configuration :
 Copy the template into moocharoo_config.py and put your ID/pass/keys/BTC amount (BTC equivalence)
