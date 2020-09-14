@@ -3,6 +3,7 @@
 # -*- coding:utf-8 -*-
 # 
 
+version=1.0
 import sys
 """ Code used with python 3.8.2 run under Visual Studio Code on a Chromebook"""
 import time
@@ -87,6 +88,7 @@ if __name__ == "__main__":
     for example : {'ZRX': 4, 'BAT': 11, 'BNB': 4, 'BCH': 4, 'ADA': 7, 'LINK': 13, 'DASH': 7}
     total_lots is the total number of lots used in the Moocharoo portfolio
     """
+    print(f"\n Mooscrap-binance version {version}\n")
     portfolio_lots,total_lots,btc_total=portfolio_tracker_page() 
     """ 
     Build account dictionnary. Numbre of lots in Binance portfolio, and the direction of trading based on delta between Moocharoo and Binance
