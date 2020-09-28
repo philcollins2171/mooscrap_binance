@@ -3,7 +3,7 @@
 # -*- coding:utf-8 -*-
 # 
 
-version=1.0
+version=1.1
 import sys
 """ Code used with python 3.8.2 run under Visual Studio Code on a Chromebook"""
 import time
@@ -20,8 +20,6 @@ import logging
 Regular Chrome or any other browser must be installed
 Using Chrome to access web
 """
-#driver = webdriver.Chrome(). Any other program can be used. See webdriver doc.
-driver = webdriver.Chrome(ChromeDriverManager().install())
 # CSS Pathes on Moocharoo site
 xpath_login="/html/body/header[@class='header-section transparent--header header--fixed']/div[@class='header-top']/div[@class='container']/div[@class='row justify-content-between']/div[@class='col-lg-4 col-md-4']/div[@class='header-top-right d-flex align-items-center justify-content-end']/div[@class='header-cart-count']/span"
 xpath_user="/html/body[@class='modal-open']/div[@id='signInModal']/div[@class='modal-dialog modal-dialog-centered']/div[@class='modal-content bdr-radius']/div[@class='signin-wrapper']/form[@class='signin-form']/div[@class='form-group'][1]/input[@class='form-control']"
@@ -40,11 +38,11 @@ def site_login():
     element=driver.find_element_by_xpath(xpath_btnlogin)
     driver.execute_script("arguments[0].click();", element)
 
-def portfolio_tracker_page():
+def portfolio_tracker_page(btc_capital):
     driver.get("https://moocharoo.ninja/portfolio-tracker.html")
     time.sleep(1)
     driver.find_element_by_xpath(xpath_cryptovalue).clear()
-    driver.find_element_by_xpath(xpath_cryptovalue).send_keys(config.capital) # config.capital is to be setup in moocharoo_config.py
+    driver.find_element_by_xpath(xpath_cryptovalue).send_keys(str(btc_capital)) # config.capital is to be setup in moocharoo_config.py
     driver.find_element_by_xpath(xpath_submit).click()
     cryptos = driver.find_elements_by_css_selector("div.col-lg-6.investment-item.crypto")
     portfolio_lots=dict()#dictionnary of crypto = lot
@@ -82,6 +80,10 @@ if __name__ == "__main__":
     logging.error('error message')
     logging.critical('critical error')
     """
+    btc_capital = manage_binance.get_btc_capital()
+    #driver = webdriver.Chrome(). Any other program can be used. See webdriver doc.
+    driver = webdriver.Chrome(ChromeDriverManager().install())
+
     site_login()
     """ 
     Build portfolio_lots dictionnary. Lots is the number of lots in the Moocharoo portfolio
@@ -89,7 +91,7 @@ if __name__ == "__main__":
     total_lots is the total number of lots used in the Moocharoo portfolio
     """
     print(f"\n Mooscrap-binance version {version}\n")
-    portfolio_lots,total_lots,btc_total=portfolio_tracker_page() 
+    portfolio_lots,total_lots,btc_total=portfolio_tracker_page(btc_capital) 
     """ 
     Build account dictionnary. Numbre of lots in Binance portfolio, and the direction of trading based on delta between Moocharoo and Binance
     for example : {'BAT': (19, 'BUY'), 'BNB': (0, 'SELL'), 'BCH': (0, 'BUY'), 'BTG': (0, 'BUY'), 'ADA': (489, 'BUY')}

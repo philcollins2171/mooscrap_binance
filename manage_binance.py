@@ -7,6 +7,24 @@ from binance.client import Client
 from moocharoo_config import config
 client = Client(config.apikey,config.secretkey)
 MIN_VALUE=0.0001
+
+def get_btc_capital():
+    current = client.get_account()
+    """ Compute total BTC equivalence """
+    print(f"Computing BTC capital...")
+    capital_computed = 0
+    for crypto in current['balances']:
+        #balance format example {'asset': 'DASH', 'free': '696.00000000', 'locked': '0.00000000'}
+        if crypto["asset"] == "BTC":
+            capital_computed = capital_computed + float(crypto["free"])
+        else:
+            name=crypto["asset"]+'BTC'# name of the pair to trade
+            if  float(crypto["free"]) > 0.00000001:
+                avg_price = client.get_avg_price(symbol=name) #Get market price for a pair.
+                capital_computed = capital_computed + float(avg_price['price'])*float(crypto["free"])
+    print(f"Total BTC estimated = {capital_computed:.4f}")
+    return ( float(int(capital_computed*100))/100)
+
 def get_account_info(portfolio,capital,total_lots,btc_total):
     account=dict()
     for crypto in portfolio.keys():
