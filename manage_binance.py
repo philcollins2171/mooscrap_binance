@@ -20,8 +20,11 @@ def get_btc_capital():
         else:
             name=crypto["asset"]+'BTC'# name of the pair to trade
             if  float(crypto["free"]) > 0.00000001:
-                avg_price = client.get_avg_price(symbol=name) #Get market price for a pair.
-                capital_computed = capital_computed + float(avg_price['price'])*float(crypto["free"])
+                try:
+                    avg_price = client.get_avg_price(symbol=name) #Get market price for a pair.
+                    capital_computed = capital_computed + float(avg_price['price'])*float(crypto["free"])
+                except:
+                    print(f"Error encountered with {name}")
     print(f"Total BTC estimated = {capital_computed:.4f}")
     return ( float(int(capital_computed*100))/100)
 
