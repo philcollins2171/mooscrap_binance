@@ -43,7 +43,7 @@ def get_account_info(portfolio,capital,total_lots,btc_total):
             If you want to use 100% of capital, the formula to use is
             asset_nb=portfolio[crypto]*((capital-capital*0.1)/btc_total)
             """
-            asset_nb=portfolio[crypto]*((capital-capital*0.1)/btc_total)
+            asset_nb=portfolio[crypto]
             """ Compute the difference between normalized Moocharoo portfolio and Binance account crypto amount """
             difference=asset_nb-float(balance["free"])
             diff_price_btc = abs(difference)*float(avg_price['price'])
