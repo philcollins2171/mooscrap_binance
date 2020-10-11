@@ -3,7 +3,7 @@
 # -*- coding:utf-8 -*-
 # 
 
-version=1.1
+version=1.2
 import sys
 """ Code used with python 3.8.2 run under Visual Studio Code on a Chromebook"""
 import time
@@ -70,21 +70,19 @@ def portfolio_tracker_page(btc_capital):
     return(portfolio_lots,total_lots, pos_value_total)
 
 if __name__ == "__main__":
-    """
-    print("LOG ACTIVATED")
-    logging.basicConfig(filename='scrap_crypto.log',level=logging.DEBUG,\
-        format='%(asctime)s -- %(name)s -- %(levelname)s -- %(message)s')
-    logging.debug('Debug error')
-    logging.info('INFO ERROR')
-    logging.warning('Warning Error %s: %s', '01234', 'Erreur Oracle')
-    logging.error('error message')
-    logging.critical('critical error')
-    """
-    btc_capital = manage_binance.get_btc_capital()
-    #driver = webdriver.Chrome(). Any other program can be used. See webdriver doc.
-    driver = webdriver.Chrome(ChromeDriverManager().install())
 
+    """
+    Get equivalent BTC capital by getting market value of all cryptos in the Binance portfolio
+    """
+
+    btc_capital = manage_binance.get_btc_capital()
+    
+    """
+    Launch Browser and Login Moocharoo site
+    """
+    driver = webdriver.Chrome(ChromeDriverManager().install())
     site_login()
+
     """ 
     Build portfolio_lots dictionnary. Lots is the number of lots in the Moocharoo portfolio
     for example : {'ZRX': 4, 'BAT': 11, 'BNB': 4, 'BCH': 4, 'ADA': 7, 'LINK': 13, 'DASH': 7}
@@ -92,11 +90,19 @@ if __name__ == "__main__":
     """
     print(f"\n Mooscrap-binance version {version}\n")
     portfolio_lots,total_lots,btc_total=portfolio_tracker_page(btc_capital) 
+    
     """ 
     Build account dictionnary. Numbre of lots in Binance portfolio, and the direction of trading based on delta between Moocharoo and Binance
     for example : {'BAT': (19, 'BUY'), 'BNB': (0, 'SELL'), 'BCH': (0, 'BUY'), 'BTG': (0, 'BUY'), 'ADA': (489, 'BUY')}
     """
-    account=manage_binance.get_account_info(portfolio_lots,float(config.capital),total_lots,btc_total) 
-    """ Update of all Binance positions"""
+    account=manage_binance.get_account_info(portfolio_lots,total_lots,btc_total) 
+    
+    """
+    Update Binance portfolio
+    """
     manage_binance.update_positions(account)
+
+    """
+    Close out Browser and Quit Moocharoo site
+    """
     driver.quit()#kill Chrome#
