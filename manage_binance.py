@@ -28,7 +28,7 @@ def get_btc_capital():
     print(f"Total BTC estimated = {capital_computed:.4f}")
     return ( float(int(capital_computed*100))/100)
 
-def get_account_info(portfolio,capital,total_lots,btc_total):
+def get_account_info(portfolio,total_lots,btc_total):
     account=dict()
     for crypto in portfolio.keys():
         balance = client.get_asset_balance(asset=crypto) 
